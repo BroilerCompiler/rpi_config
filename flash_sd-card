@@ -1,0 +1,51 @@
+#!/bin/bash
+echo "current working directory is " && pwd
+
+function yes_or_no {
+    while true; do
+        read -p "$* [y/n]: " yn
+        case $yn in
+            [Yy]*) return 0  ;;  
+            [Nn]*) echo "Aborted" ; return  1 ;;
+        esac
+    done
+}
+
+
+#get sd card name
+sudo fdisk -l | grep mmcblk #TODO: check if sd card exists and make name variable
+SDCARD=mmcblk0
+echo "found SD-CARD $SDCARD"
+
+#download latest image
+mkdir tmp
+pushd tmp/
+#check if an image file already exists, otherwise download the latest
+FILE="rpi_latest.img"
+if [ -f $FILE ];then
+    echo "$FILE exists; skipping download process"
+else
+    echo Downloading latest RPI-lite image 
+    #TODO: switch to torrenting
+    wget -O rpi_latest.zip https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-05-28/2021-05-07-raspios-buster-armhf-lite.zip
+    unzip rpi_latest.zip
+    rm rpi_latest.zip
+    mv *.img rpi_latest.img
+fi
+popd
+
+yes_or_no "should i continue to writing the img?"
+
+#flash image
+echo "Writing image to SD-CARD"
+sudo dd if=tmp/rpi_latest.img of=/dev/$SDCARD bs=4M status=progress
+
+#enable ssh / enable WIFI
+touch /media/$USER/boot/ssh
+cp conf/wpa_supplicant.conf /media/$USER/boot/wpa_supplicant.conf
+
+yes_or_no "should i remove the tmp folder ?" && rm -rf tmp/
+
+
+
+# sudo rm -rf tmp #TODO cleanup the tmp folder

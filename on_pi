@@ -1,0 +1,22 @@
+#!/bin/bash
+# this file is used for automatically making the fresh RPI installation secure
+
+# user
+sudo adduser server
+sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,netdev,gpio,i2c,spi server
+sudo deluser pi
+sudo deluser -remove-home pi
+
+#ssh
+sudo rsync conf/sshd_config /etc/ssh/sshd_config
+
+#networking
+sudo apt install ufw
+sudo ufw allow 22 80 8080 10000
+sudo ufw enable
+
+sudo apt install fail2ban
+sudo cp conf/fail2ban /etc/fail2ban/jail.local
+
+#update
+sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove
