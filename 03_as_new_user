@@ -9,19 +9,19 @@ sudo deluser -remove-home pi
 sudo rsync conf/sshd_config /etc/ssh/sshd_config
 
 #networking
-sudo apt install ufw -y >> software_installation.log
+sudo apt install ufw -y
 sudo ufw allow 22 80 8080 10000
 sudo ufw enable
 
-sudo apt install fail2ban -y >> software_installation.log
+sudo apt install fail2ban -y
 sudo rsync conf/jail.local /etc/fail2ban/jail.local
 
 #update
-sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y >> software_installation.log
+sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y
 
 #install required dependencies for
 # Nextcloud
-sudo apt install apache2 php php-gd sqlite php-sqlite3 unzip php-curl php-zip php-xml php-mbstring php-imagick php7.4-intl libapache2-mod-php mariadb-server php-mysql libnet-ssleay-perl libauthen-pam-perl libio-pty-perl apt-show-versions net-tools nmap -y >> software_installation.log
+sudo apt install apache2 php php-gd sqlite php-sqlite3 unzip php-curl php-zip php-xml php-mbstring php-imagick php7.4-intl libapache2-mod-php mariadb-server php-mysql libnet-ssleay-perl libauthen-pam-perl libio-pty-perl apt-show-versions net-tools nmap libnet-ssleay-perl libauthen-pam-perl libio-pty-perl perl-openssl-defaults -y >> software_installation.log
 
 wget https://downloads.sourceforge.net/project/webadmin/webmin/1.974/webmin_1.974_all.deb
-sudo dpkg -i webmin_1.974_all.deb >> software_installation.log
+sudo dpkg -i webmin_1.974_all.deb
