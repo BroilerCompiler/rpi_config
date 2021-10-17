@@ -3,12 +3,18 @@
 # this file is used for automatically making the fresh RPI installation secure
 #set hostname
 sudo cp conf/hostname /etc/hostname
+HOSTNAME=$(cat conf/hostname)
 
 # user
-sudo adduser server
-sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,netdev,gpio,i2c,spi server
-sudo mv /home/pi/conf/ /home/server/
-sudo mv /home/pi/as_new_user /home/server/
-sudo mv /home/pi/software /home/server/
+USERNAME=$(cat conf/username)
+sudo adduser $USERNAME
+sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,netdev,gpio,i2c,spi $USERNAME
+sudo mv /home/pi/conf/ /home/$USERNAME/
+sudo mv /home/pi/03_as_new_user /home/$USERNAME/
 
+echo "Changed Hostname to $HOSTNAME; Added user Server; Copied config files"
+echo "Now copy your ssh keys to server@$HOSTNAME" 
+echo "Rebooting in 5 ..."
+
+sleep 5
 sudo reboot

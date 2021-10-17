@@ -1,3 +1,8 @@
 #!/bin/bash
+HOSTNAME=$(cat conf/hostname)
+USERNAME=$(cat conf/username)
+execute="ssh-copy-id $USERNAME@$HOSTNAME"
 
-ssh-copy-id server@homeserver
+echo "Command: $execute"
+$execute
+
