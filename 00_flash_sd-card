@@ -68,4 +68,7 @@ echo "everything done, cleaning up..."
 sudo umount /dev/mmcblk0p1
 sudo umount /dev/mmcblk0p2
 
+sudo rm -r /mnt/rootfs
+sudo rm -r /mnt/boot
+
 yes_or_no "should i remove the tmp folder ?" && rm -rf tmp/

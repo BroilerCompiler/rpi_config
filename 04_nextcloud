@@ -1,0 +1,47 @@
+sudo rm /var/www/html/nextcloud
+
+/etc/php/7.3/apache2/php.ini : line 401
+--> memory_limit = 512
+
+wget https://download.nextcloud.com/server/releases/nextcloud-22.2.0.zip
+unzip nextcloud <TAB>
+sudo mv nextcloud/* /var/www/html/ && rm -r nextcloud
+
+sudo chown -R www-data:www-data /var/www/html/
+
+WEBMIN:
+Unused modules > MariaDB Database Server
+
++ create a new database : nextcloud
+user permissions > create new user : db_admin ; pwd: <KeePass>
+hosts > localhost
+permissions > all
+
+sudo systemctl restart apache2
+
+
+------------------------------Setup------------------------------
++ user: jonas
++ enable 2FA
++ App Tokens
+------------------------------Apps-------------------------------
+Calendar
+Tasks
+Notes
+Deck
+2Factor TOTP Provider
+Splash
+AppOrder
+Welcome Widget
+Checksum
+MindMap
+QuotaWarning
+AudioPlayer
+Forms
+
+#AI
+FaceRecognition
+MediaDC
+Recognize
+Collaborative Tags
+------------------------------Backup-----------------------------
