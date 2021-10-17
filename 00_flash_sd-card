@@ -34,18 +34,38 @@ else
 fi
 popd
 
-yes_or_no "should i continue to writing the img?"
+#yes_or_no "should i continue to writing the img?"
 
 #flash image
 echo "Writing image to SD-CARD"
 sudo dd if=tmp/rpi_latest.img of=/dev/$SDCARD bs=4M status=progress
 
-#enable ssh / enable WIFI
-touch /media/$USER/boot/ssh
-cp conf/wpa_supplicant.conf /media/$USER/boot/wpa_supplicant.conf
+#unmount in case the system automounts partitions
+sudo umount /dev/mmcblk0p1
+sudo umount /dev/mmcblk0p2
+
+#mount written partitions
+sudo mkdir /mnt/rootfs
+sudo mkdir /mnt/boot
+
+sudo mount /dev/mmcblk0p1 /mnt/boot/
+sudo mount /dev/mmcblk0p2 /mnt/rootfs/
+echo "mounted partitions"
+
+#enable ssh, WIFI
+echo "copying config files..."
+sudo touch /mnt/boot/ssh
+#sudo cp conf/wpa_supplicant.conf /mnt/boot/wpa_supplicant.conf    #--------------use this template for wpa_supplicant.conf and add your WIFI credentials
+sudo cp /home/$USER/.licenses/creds /mnt/boot/wpa_supplicant.conf
+
+#copy config files to execute on the new system
+sudo cp -r conf/ /mnt/rootfs/home/pi/
+sudo cp 01_as_pi_user /mnt/rootfs/home/pi/
+sudo cp 03_as_new_user /mnt/rootfs/home/pi/
+#TODO: Autostart config scripts after first startup ; at the moment you have to start them manually
+
+echo "everything done, cleaning up..."
+sudo umount /dev/mmcblk0p1
+sudo umount /dev/mmcblk0p2
 
 yes_or_no "should i remove the tmp folder ?" && rm -rf tmp/
-
-
-
-# sudo rm -rf tmp #TODO cleanup the tmp folder
