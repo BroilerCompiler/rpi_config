@@ -1,0 +1,38 @@
+#!/bin/bash
+#back up nextcloud with all config files and data and all necessary config files; called by cronjob
+#to restore execute 06_restore in this repo
+##https://docs.nextcloud.com/server/latest/admin_manual/maintenance/backup.html
+
+DATE=$(date +%Y-%m-%d_%H-%M)
+DEST_DIR="/home/server/"
+SOURCE="/home/server/backup/*"
+LOGFILE="/home/server/backup-$DATE.log"
+
+sudo rm -r /home/server/backup/*
+echo "Cleared old backup directory; Created logfile: "
+touch $LOGFILE
+ls /home/server/
+ls /home/server/backup/
+
+sudo -u www-data php /var/www/html/occ maintenance:mode --on >> $LOGFILE
+echo "MAINTENANCE_MODE ACTIVE: Starting Backup...." >> $LOGFILE
+###################################################MAINTENANCE MODE##############################################
+rsync -Aavx /var/www/html/ /home/server/backup/nextcloud-dirbkp/ #Nextcloud (config and data)
+sudo rsync -Aavx /etc/letsencrypt/ /home/server/backup/letsencrypt/ #Domain SSL certificates
+sudo rsync -Aavx /etc/php/ /home/server/backup/php/ #PHP
+sudo rsync -Aavx /etc/apache2/ /home/server/backup/apache2/ #Apache2
+
+## mysqldump --single-transaction -h [server] -u [username] -p[password] [db_name] > OUTPUTFILE.bak
+mysqldump --single-transaction -h 127.0.0.1 -u db_admin -p nextcloud > /home/server/backup/nextcloud-db.bak >> $LOGFILE #Database backup
+###################################################MAINTENANCE MODE##############################################
+sudo -u www-data php /var/www/html/occ maintenance:mode --off >> $LOGFILE
+echo "MAINTENANCE_MODE DISABLED: Compressing Backup...." >> $LOGFILE
+
+sudo tar -cvzpf $DEST_DIR/nextcloud_backup-$DATE.tar.gz $SOURCE
+
+echo "Compression succressful; Cleaning backup directory... " >> $LOGFILE
+sudo rm -r /home/server/backup/*
+ls /home/server/backup/ >> $LOGFILE
+echo "Everything went well. New backup archive is "$(cd /home/server/ && ls nextcloud_backup*)". Goodbye" >> $LOGFILE
+
+

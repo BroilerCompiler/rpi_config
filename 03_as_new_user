@@ -32,3 +32,5 @@ else
     wget https://downloads.sourceforge.net/project/webadmin/webmin/1.974/webmin_1.974_all.deb
 fi
 sudo dpkg -i webmin_1.974_all.deb
+
+mkdir backup

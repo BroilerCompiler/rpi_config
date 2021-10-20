@@ -1,0 +1,24 @@
+#!/bin/bash
+#restore nextcloud with config[nc_config, php_config, apache2_config], data, certificates; called by user
+#to backup execute 05_backup in this repo
+
+##https://docs.nextcloud.com/server/latest/admin_manual/maintenance/restore.html
+
+tar -xzf /home/server/nextcloud_backup-*.tar.gz -C /home/server/backup/
+
+#sudo -u www-data php /var/www/html/occ maintenance:mode --on
+###################################################MAINTENANCE MODE##############################################
+#rsync -Aavx /home/server/backup/nextcloud-dirbkp/ /var/www/html/ #Nextcloud (config and data)
+#sudo rsync /home/server/backup/letsencrypt/ /etc/letsencrypt/                     #Domain SSL certificates
+#sudo rsync /home/server/backup/php/ /etc/php/                                     #PHP
+#sudo rsync /home/server/backup/apache2/ /etc/apache2/                             #Apache2
+
+## mysql -h [server] -u [username] -p[password] -e "DROP DATABASE nextcloud"
+## mysql -h [server] -u [username] -p[password] -e "CREATE DATABASE nextcloud"
+#mysql -h 127.0.0.1 -u db_admin -p -e "DROP DATABASE nextcloud"
+#mysql -h 127.0.0.1 -u db_admin -p -e "CREATE DATABASE nextcloud"
+
+#mysql -h 127.0.0.1 -u db_admin -p nextcloud < nextcloud-db.bak 
+###################################################MAINTENANCE MODE##############################################
+#sudo -u www-data php /var/www/html/occ maintenance:mode --off
+
