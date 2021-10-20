@@ -25,19 +25,26 @@ sudo systemctl restart apache2
 + enable 2FA
 + App Tokens
 ------------------------------Apps-------------------------------
+Auditing/Logging
 Calendar
 Tasks
 Notes
 Deck
+
 2Factor TOTP Provider
+
 Splash
 AppOrder
-Welcome Widget
+
 Checksum
-MindMap
+Mind Map (with a space)
+
 QuotaWarning
 AudioPlayer
 Forms
+
+GitHub integration
+Welcome
 
 #AI
 FaceRecognition
@@ -45,3 +52,45 @@ MediaDC
 Recognize
 Collaborative Tags
 ------------------------------Backup-----------------------------
+sudo -u www-data php occ maintenance:mode --on
+rsync -Aavx nextcloud/ nextcloud-dirbkp_`date +"%Y%m%d"`/
+
+## mysqldump --single-transaction -h [server] -u [username] -p[password] [db_name] > nextcloud-sqlbkp_`date +"%Y%m%d"`.bak
+mysqldump --single-transaction -h homeserver -u jonas -p[password] nextcloud > jonas_nextcloud-sqlbkp_`date +"%Y%m%d"`.bak
+mysqldump --single-transaction -h homeserver -u privileged -p[password] nextcloud > privileged_nextcloud-sqlbkp_`date +"%Y%m%d"`.bak
+
+sudo -u www-data php occ maintenance:mode --off
+
+##https://docs.nextcloud.com/server/latest/admin_manual/maintenance/restore.html
+##https://docs.nextcloud.com/server/latest/admin_manual/maintenance/backup.html
+
+
+
+
+
+----------------------------LetsEncrypt CERT-----------------------------
+sudo -s
+apt install certbot python-certbot-apache -y
+echo "192.168.178.143 jonaskeplinger.dd-dns.de" >> /etc/hosts
+certbot -d jonaskeplinger.dd-dns.de --manual --preferred-challenges http certonly
+
+#create file http://jonaskeplinger.dd-dns.de/.well-known/acme-challenge/<FILENAME>
+mkdir /var/www/html/.well-known/
+mkdir /var/www/html/.well-known/acme-challenge/
+nano /var/www/html/.well-known/acme-challenge
+#paste <FILECONTENT>
+
+#Create port forward to 80
+<ENTER>
+
+#Certificate is installed
+
+#To renew certificate run
+certbot --renew
+
+----------------------ToDo-----------------------------------------
+Backup Cronjob
+2FA (CalDAV?)
+IP Logging
+Fail2Ban
+
